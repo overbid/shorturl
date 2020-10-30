@@ -1,3 +1,6 @@
+const {
+  urlencoded
+} = require('express');
 var express = require('express');
 var router = express.Router();
 const {
@@ -22,15 +25,25 @@ const getFullUrl = (uri) => pool
     })
   );
 
-router.get('/:uri', async function (req, res, next) {
+const updateCounter = (uri) => pool
+  .query('UPDATE url SET count = count +1 WHERE uri = $1;', [uri])
+  .catch(err =>
+    setImmediate(() => {
+      throw err
+    })
+  );
 
-  const result = await getFullUrl(req.params.uri);
+router.get('/:uri', async function (req, res, next) {
+  const uri = encodeURIComponent(req.params.uri);
+  const result = await getFullUrl(uri);
   let httpStatus = {};
   if (!result) {
     httpStatus = status400;
   } else {
+    await updateCounter(uri);
     httpStatus.status = 200;
     httpStatus.message = result.full_url;
+    res.redirect(result.full_url);
   }
 
   return res.status(httpStatus.status).json(httpStatus.message);
