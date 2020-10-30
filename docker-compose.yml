@@ -1,0 +1,96 @@
+version: "3.8"
+services:
+  db:
+    container_name: postgres
+    restart: always
+    build:
+      context: ${PWD}/docker/posgress
+      args:
+        CONTINENT: ${CONTINENT}
+        CITY: ${CITY}
+        USERID: ${USERID}
+        GROUPID: ${GROUPID}
+        USERNAME: ${USERNAME}
+    user: ${USERID}:${GROUPID}
+    volumes:
+      - ${PWD}${DATABASE_DATA_DIR}:/var/lib/postgresql/data
+      - ${PWD}/docker/posgress/CreateTable.sql:/docker-entrypoint-initdb.d/CreateTable.sql
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    networks:
+      backend:
+        ipv4_address: 172.18.18.5
+  backend:
+    container_name: express
+    restart: unless-stopped
+    build:
+      context: ${PWD}/docker/node
+      args:
+        CONTINENT: ${CONTINENT}
+        CITY: ${CITY}
+        USERID: ${USERID}
+        GROUPID: ${GROUPID}
+        USERNAME: ${USERNAME}
+    user: ${USERID}:${GROUPID}
+    volumes:
+      - ${PWD}/code/backend:/var/www
+    ports:
+      - 3000:3000
+    working_dir: ${WORKSPACE}
+    command: node /var/www/bin/www
+    environment:
+      HOST: 0.0.0.0
+      YARN_GLOBAL_FOLDER: ${WORKSPACE}/global/yarn
+      YARN_CACHE_FOLDER: ${WORKSPACE}/cache/yarn
+      PGHOST: db
+      PGHOSTADDR: 172.18.18.5
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+    networks:
+      backend:
+        ipv4_address: 172.18.18.6
+  # web:
+  #   container_name: nginx
+  #   restart: unless-stopped
+  #   domainname: shorturl.test
+  #   build:
+  #     context: ${PWD}/docker/nginx
+  #     args:
+  #       CONTINENT: ${CONTINENT}
+  #       CITY: ${CITY}
+  #       USERID: ${USERID}
+  #       GROUPID: ${GROUPID}
+  #       USERNAME: ${USERNAME}
+  #   volumes:
+  #     - ${PWD}/code:/var/www
+  #     - ${PWD}/docker/nginx/conf.d:/etc/nginx/conf.d
+  #     - ${PWD}/php:/run/php
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #   networks:
+  #     backend:
+  #       ipv4_address: 172.18.18.7
+  #     frontend:
+  #       ipv4_address: 172.18.19.7
+networks:
+  backend:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.18.18.0/24
+  # frontend:
+  #   driver: bridge
+  #   driver_opts:
+  #     com.docker.network.enable_ipv6: "false"
+  #   ipam:
+  #     driver: default
+  #     config:
+  #       - subnet: 172.18.19.0/24
