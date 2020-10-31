@@ -5,22 +5,32 @@ import {fetchData} from './actions'
 
 class App extends Component {
 
+    state = {
+        url: ''
+    }
+
+    updateUrl = (e) => {
+        this.setState({url: e.target.value})
+    }
+
     render() {
+
         return (
             <div className="App">
                 <h1>Make a Short URL</h1>
-                <div>
+                <form>
                     <label>URL
                     </label>{' '}
                     <input
                         type="text"
-                        id="furl"
-                        name="furl"
-                        />{' '}
+                        id="turl"
+                        name="turl"
+                        onChange={this.updateUrl}
+                        value={this.state.url}/>{' '}
                     <button type="button" onClick={this.props.onFetchData}>
                         Submit
                     </button>
-                </div>
+                </form>
                 <br/> {this.props.error && <p>{this.props.error}</p>}
 
                 {this.props.data && <div>
@@ -33,10 +43,12 @@ class App extends Component {
 }
 
 const mapStatetoProps = (state) => {
+
     return {url: state.url, data: state.data, error: state.error}
 }
 
 const mapDispatchprops = (dispatch) => {
+
     return {
         onFetchData: () => dispatch(fetchData())
     }

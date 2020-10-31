@@ -1,5 +1,5 @@
 export const fetchData = () => {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         return fetch('http://localhost:3006/v1/url', {
             method: 'POST',
             headers: {
