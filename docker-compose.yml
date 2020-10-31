@@ -38,7 +38,7 @@ services:
     volumes:
       - ${PWD}/code/backend:/var/www
     ports:
-      - 3000:3000
+      - 3006:3006
     working_dir: ${WORKSPACE}
     command: node /var/www/bin/www
     environment:
