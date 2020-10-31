@@ -4,12 +4,16 @@ const intialState = {
     error: ""
 }
 
-const reducer = (state  = intialState, action) => {
+const reducer = (state = intialState, action) => {
     switch (action.type) {
-        case "FetchData":
+        case "SUBMIT":
             return {
                 ...state,
                 url: action.url,
+            }
+        case "FETCHDATA":
+            return {
+                ...state,
                 data: action.data
             }
         case "ERROR":

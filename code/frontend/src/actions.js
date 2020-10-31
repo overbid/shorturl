@@ -10,7 +10,7 @@ export const fetchData = (store) => {
                 body: JSON.stringify({url: 'http://google.com'})
             })
             .then(response => response.json())
-            .then(json => dispatch({type: "FetchData", data: json}))
+            .then(json => dispatch({type: "FETCHDATA", data: json}))
             .catch(err => {
                 dispatch({type: "ERROR", msg: "Unable to fetch data"})
                 console.error(err);
