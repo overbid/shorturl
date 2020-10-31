@@ -1,5 +1,6 @@
-export const fetchData = () => {
-    return (dispatch, getState) => {
+export const fetchData = (store) => {
+    console.log(store);
+    return (dispatch) => {
         return fetch('http://localhost:3006/v1/url', {
             method: 'POST',
             headers: {
