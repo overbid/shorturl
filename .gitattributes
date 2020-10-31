@@ -3,3 +3,4 @@
 
 # Force Unix-style line endings on all files
 * text eol=lf
+*.ico -text
